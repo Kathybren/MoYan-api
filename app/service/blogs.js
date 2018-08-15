@@ -5,6 +5,7 @@ const {
 } = require('../util/util'); 
 class BlogsService extends Service {
     async add(blog) {
+        console.log(blog)
         if (blog.userid&&blog.title&&blog.content&&blog.tags) {
             const userinfo = {
                 title: blog.title,
@@ -12,6 +13,10 @@ class BlogsService extends Service {
                 tags: blog.tags,
                 created_time: new Date(),
                 userid: blog.userid,
+                isHeart: 0,
+                commentSize: 0,
+                heartSize: 0,
+                readSize: 0
             }
             const result = await this.app.mysql.insert('blogs', userinfo)
             if (result.affectedRows === 1) {
@@ -26,11 +31,39 @@ class BlogsService extends Service {
         }
     }
     async getblogs(info) {
+        if (!info.pageNum||!info.pageSize) {
+            return Object.assign(ERROR,  {
+                msg:`expected an object with username, password but got null`, 
+            }); 
+        }
         const result = await this.app.mysql.select('blogs', {
-            columns: ['title','content','tags','userId'],
+            columns: ['title','heartSize','commentSize','tags','articleid','isHeart'],
             limit:parseInt(info.pageSize),
             offset: (parseInt(info.pageNum-1))*parseInt(info.pageSize)
         })
+        let id = info.userid
+        if (id) {
+            let articleid  = await this.app.mysql.select('heart',{userid:id})
+            let arr = []
+            
+            if (articleid.length>0) {
+                articleid.forEach(item => {
+                    arr.push(item.articleid)
+                })
+                result.forEach(item=>{
+                    if (arr.indexOf(item.articleid) !==-1) {
+                        item.isHeart =1
+                    }
+                })
+            }
+        }
+        // let arr = [1,2,3]
+        // let arr1 = [{is:0,id:1},{is:0,id:4},{is:0,id:5},{is:0,id:6}]
+        // arr1.forEach(item=>{
+        //     if (arr.indexOf(item.id) !==-1) {
+        //         item.is =1
+        //     }
+        // })
         return Object.assign(SUCCESS,  {
             data:result, 
         }); 

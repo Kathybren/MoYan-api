@@ -17,10 +17,10 @@ class UserService extends Service {
       if (bcrypt.compareSync(params.password, result.password)) {
         const userInfo = {
           userName: result.username,
-          id: result.id
+          id: result.userid
         }
         const token = this.app.jwt.sign(userInfo, this.app.config.jwt.secret)
-        return Object.assign(SUCCESS,  {token}, {userId:result.userId});
+        return Object.assign(SUCCESS,  {token}, {userid:result.userid});
       } else {
         return Object.assign(ERROR,  {
           msg: 'password is error' 
@@ -31,7 +31,7 @@ class UserService extends Service {
       if ( ! user.username ||  ! user.password) {
         this.ctx.status = 400; 
         return Object.assign(ERROR,  {
-          msg:`expected an object with username, password but got`, 
+          msg:`expected an object with username, password but got null`, 
         }); 
       }
       const userDb = await this.app.mysql.get('user',  {username:user.username})
