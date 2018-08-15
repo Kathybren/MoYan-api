@@ -13,5 +13,15 @@ class CommentController extends Controller {
         const result = await this.ctx.service.blogs.getCommon(params)
         this.ctx.body = result; 
     }
+    async getReply() {
+        let params = this.ctx.query
+        const result = await this.ctx.service.blogs.getReply(params)
+        this.ctx.body = result; 
+    }
+    async replyAdd() {
+        let params = this.ctx.request.body
+        const result = await this.ctx.service.blogs.replyAdd(params)
+        this.ctx.body = result; 
+    }
 }
 module.exports = CommentController;
