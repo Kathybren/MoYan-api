@@ -14,6 +14,6 @@ module.exports = app => {
   router.get('/comment/get', controller.comment.getCommon);
   router.get('/comment/getReply', controller.comment.getReply);
   router.post('/comment/add', controller.comment.addCommon);
-  router.post('/comment/replyAdd', controller.comment.addCommon);
+  // router.post('/comment/replyAdd', controller.comment.addCommon);
   router.post('/heart/operate', controller.blogs.operate);
 };

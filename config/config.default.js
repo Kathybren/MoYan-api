@@ -32,8 +32,15 @@ module.exports = appInfo => {
     secret: "huangkai"
   };
   config.security = {
-    csrf: false,
-    ctoken: false,
+    csrf: {
+      enable: false,
+      ignoreJSON: true
+    },
+    domainWhiteList: '*'
+  };
+  config.cors = {
+    origin:'*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
   };
   return config;
 };

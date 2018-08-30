@@ -1,72 +1,84 @@
-const Service = require('egg').Service
-const {
-  ERROR, 
-  SUCCESS, 
-} = require('../util/util'); 
+const Service = require('egg').Service;
 class CommentsService extends Service {
     async addCommon(com) {
-        if (com.userid&&com.articleid&&com.content) {
-            const userinfo = {
+        if (com.userid && com.articleid && com.content) {
+            let userinfo = {
                 content: com.content,
                 created_time: new Date(),
                 userid: com.userid,
                 articleid: com.articleid,
                 commentSize: 0
             }
-            const result = await this.app.mysql.insert('comments', userinfo)
+            let result = await this.app.mysql.insert('comments', userinfo)
             if (result.affectedRows === 1) {
-                return SUCCESS
-            }else {
-                return ERROR
+                return {
+                    code: 0
+                }
             }
+            return {
+                msg: `failed`,
+                codde: 1
+            }
+
         } else {
-            return Object.assign(SUCCESS,  {
-                msg:`不能为空`, 
-            }); 
+            return {
+                msg: `不能为空`,
+                codde: 1
+            };
         }
     }
     async getCommon(com) {
         if (com.articleid) {
-            const result = await this.app.mysql.select('comments', {articleid: com.articleid})
-            return Object.assign(SUCCESS,  {
-                data:result
-            }); 
-        } else {
-            return Object.assign(SUCCESS,  {
-                msg:`不能为空`, 
-            }); 
+            let result = await this.app.mysql.select('comments', {
+                articleid: com.articleid
+            })
+            return {
+                data: result,
+                code: 0
+            };
         }
+        return {
+            msg: `不能为空`,
+            code: 1
+        };
+
     }
     async getReply(reply) {
         if (reply.commentid) {
-            const result = await this.app.mysql.select('reply', {commentid: reply.commentid})
-            return Object.assign(SUCCESS,  {
-                data:result
-            }); 
-        } else {
-            return Object.assign(SUCCESS,  {
-                msg:`不能为空`, 
-            }); 
+            let result = await this.app.mysql.select('reply', {
+                commentid: reply.commentid
+            })
+            return {
+                data: result,
+                code: 0
+            };
         }
+        return {
+            msg: `不能为空`,
+            code: 1
+        };
+
     }
     async replyAdd(reply) {
-        if (reply.commentid&&reply.content&&reply.userid&&reply.articleid) {
-            const userinfo = {
+        if (reply.commentid && reply.content && reply.userid && reply.articleid) {
+            let userinfo = {
                 content: reply.content,
                 created_time: new Date(),
                 userid: reply.userid,
                 articleid: reply.articleid,
                 commentid: reply.commentid
             }
-            const result = await this.app.mysql.insert('reply', userinfo)
-            return Object.assign(SUCCESS,  {
-                data:result
-            }); 
-        } else {
-            return Object.assign(SUCCESS,  {
-                msg:`不能为空`, 
-            }); 
+            let result = await this.app.mysql.insert('reply', userinfo)
+            return {
+                data: result,
+                code: 0
+            };
         }
+        return {
+            msg: `不能为空`,
+            code: 0
+        };
+
     }
 }
-module.exports = CommentsService
+module.exports = CommentsService;
